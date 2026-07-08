@@ -1,0 +1,144 @@
+<CompuCell3D Revision="2" Version="4.5.0">
+   
+   <Metadata>
+      
+      <!-- Basic properties simulation -->
+      <NumberOfProcessors>1</NumberOfProcessors>
+      <DebugOutputFrequency>10</DebugOutputFrequency>
+      <!-- <NonParallelModule Name="Potts"/> -->
+   </Metadata>
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="1000" y="1000" z="60"/>
+      <Steps>10080</Steps>
+      <Temperature>10.0</Temperature>
+      <NeighborOrder>1</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="Floor"/>
+      <CellType TypeId="2" TypeName="Cell"/>
+      <CellType TypeId="3" TypeName="Apoptotic"/>
+      <CellType TypeId="4" TypeName="Necrotic"/>
+      <CellType TypeId="5" TypeName="Both"/>
+   </Plugin>
+   
+   <Plugin Name="CenterOfMass">
+      
+      <!-- Module tracking center of mass of each cell -->
+   </Plugin>
+   
+   <Plugin Name="NeighborTracker">
+      
+      <!-- Module tracking neighboring cells of each cell -->
+   </Plugin>
+   
+   <Plugin Name="PixelTracker">
+      
+      <!-- Module tracking pixels of each cell -->
+   </Plugin>
+   
+   <Plugin Name="BoundaryPixelTracker">
+      
+      <!-- Module tracking boundary pixels of each cell -->
+      <NeighborOrder>1</NeighborOrder>
+   </Plugin>
+   
+   <Plugin Name="Volume"/>
+   
+   <Plugin Name="Surface"/>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">10.0</Energy>
+      <Energy Type1="Medium" Type2="Floor">0.0</Energy>
+      <Energy Type1="Medium" Type2="Cell">2.0</Energy>
+      <Energy Type1="Medium" Type2="Apoptotic">10.0</Energy>
+      <Energy Type1="Medium" Type2="Necrotic">10.0</Energy>
+      <Energy Type1="Medium" Type2="Both">10.0</Energy>
+      <Energy Type1="Floor" Type2="Floor">0.0</Energy>
+      <Energy Type1="Floor" Type2="Cell">100.0</Energy>
+      <Energy Type1="Floor" Type2="Apoptotic">100.0</Energy>
+      <Energy Type1="Floor" Type2="Necrotic">100.0</Energy>
+      <Energy Type1="Floor" Type2="Both">100.0</Energy>
+      <Energy Type1="Cell" Type2="Cell">10.0</Energy>
+      <Energy Type1="Cell" Type2="Apoptotic">1.0</Energy>
+      <Energy Type1="Cell" Type2="Necrotic">1.0</Energy>
+      <Energy Type1="Cell" Type2="Both">1.0</Energy>
+      <Energy Type1="Apoptotic" Type2="Apoptotic">1.0</Energy>
+      <Energy Type1="Apoptotic" Type2="Necrotic">1.0</Energy>
+      <Energy Type1="Apoptotic" Type2="Both">1.0</Energy>
+      <Energy Type1="Necrotic" Type2="Necrotic">1.0</Energy>
+      <Energy Type1="Necrotic" Type2="Both">1.0</Energy>
+      <Energy Type1="Both" Type2="Both">1.0</Energy>
+      <NeighborOrder>4</NeighborOrder>
+   </Plugin>
+   
+   <Plugin Name="Secretion">
+      
+      <!-- Specification of secretion properties of select cell types. -->
+      <!-- You may repeat Field element for each chemical field declared in the PDE solvers -->
+      <!-- Specification of secretion properties of individual cells can be done in Python -->
+   </Plugin>
+   
+   <Steppable Type="DiffusionSolverFE">
+      
+      <!-- Specification of PDE solvers -->
+      <DiffusionField Name="PSMA">
+         <DiffusionData>
+            <FieldName>PSMA</FieldName>
+            <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
+            <GlobalDecayConstant>0.0</GlobalDecayConstant>
+            <!-- Additional options are: -->
+            <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
+            <ConcentrationFileName>PIFModels/uniform_concentration_map_for_cell_culture.dat</ConcentrationFileName> 
+            <!-- <DiffusionCoefficient CellType="Cell">0.0</DiffusionCoefficient> -->
+            <!-- <DecayCoefficient CellType="Cell">0.000</DecayCoefficient> -->
+         </DiffusionData>
+         <SecretionData>
+            <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+            
+            <!-- Uniform secretion Definition -->
+            <!-- <SecretionOnContact SecreteOnContactWith="Floor,Cell,Apoptotic,Necrotic,Both" Type="Both">0.2</SecretionOnContact> -->
+            <!-- <ConstantConcentration Type="Both">0.1</ConstantConcentration> -->
+         </SecretionData>
+         <BoundaryConditions>
+            <Plane Axis="X">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantValue PlanePosition="Min" Value="1.0"/> -->
+            </Plane>
+            <Plane Axis="Y">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantValue PlanePosition="Min" Value="1.0"/> -->
+            </Plane>
+            <Plane Axis="Z">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantDerivative PlanePosition="Min" Value="0.0"/> -->
+            </Plane>
+         </BoundaryConditions>
+      </DiffusionField>
+   </Steppable>
+   
+   <Steppable Type="PIFInitializer">
+      
+      <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
+      <PIFName>PIFModels/CellLine.PC3.Density.1e-3Cellperum2.pif</PIFName>
+   </Steppable>
+   
+   
+   
+</CompuCell3D>
