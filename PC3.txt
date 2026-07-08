@@ -1,0 +1,106 @@
+##############################################################################################
+# TOPAS-Tissue model for PC3 cells
+# Reference Jose Huacachi
+##############################################################################################
+
+includeFile = Source.txt scorer.txt
+sv:Ph/Default/Modules = 1 "transportation_only"
+
+# Random seed CC3D
+i:Ts/Seed = 1
+
+## CC3D simulation setup
+i:CC3D/XBins = 1000
+i:CC3D/YBins = 1000
+i:CC3D/ZBins = 60
+u:CC3D/Temperature = 10.0
+d:CC3D/StopTime = 67 h
+
+dv:CC3D/IrradiateAtTimes = 1 10.0 min
+b:CC3D/RunTOPAS = "True"
+
+# Where To Irradiate? We use CC3D Fields to 
+sv:CC3D/Microenvironment/Fields = 1 "PSMA"
+bv:CC3D/Microenvironment/UseAsSource = 1 "True"
+s:CC3D/Microenvironment/DistributeFieldSourceAt = "cells"
+
+## User-defined conversion factor for space and time 
+d:CC3D/MCSToTimeConversionFactor = 0.5 min # 1 MCS = 0.5 min
+d:CC3D/VoxelToVolumeConversionFactor = 1 um3
+
+
+## DNA and cell response models
+#s:CC3D/DNADamageModel = "PoissonFromDose"
+s:CC3D/DNADamageModel = "PoissonFromLookupTable"
+s:CC3D/DNARepairModel = "TwoLesionKinetic"
+s:CC3D/CellResponseModel = "Zheng"
+i:CC3D/ReportDamageForATotalOfCells = 1500
+sv:CC3D/SBMLVariablesReported = 8 "DSB_C" "p53arrester" "p53killer" "p53p" "ATMp" "Wip1" "Casp3" "p21"
+
+# Order matters, each cell is assigned an integer flag in increasing order starting with 0
+# Output file with cell.type correspond to the order used here
+sv:CC3D/CellsNames = 6 "Medium" "Floor" "Cell" "Apoptotic" "Necrotic" "Both"
+sv:CC3D/CellsColors = 6 "black" "green" "red" "blue" "grey" "grey"
+bv:CC3D/CellsFrozen = 6 "False" "True" "False" "False"    "False"     "False"
+bv:CC3D/CellsReported = 6 "False" "False" "True" "True"   "True"   "True"
+
+# Define cells behavior
+# Minimum parameters 
+b:CC3D/Medium/UseInRepairModel = "False"
+sv:CC3D/Medium/AdhesionEnergy/Cells = 5 "Cell" "Floor" "Apoptotic" "Necrotic" "Both"
+uv:CC3D/Medium/AdhesionEnergy/Values= 5  2.0    0.0      10.0       10.0       10.0
+
+b:CC3D/Floor/UseInRepairModel = "False"
+sv:CC3D/Floor/AdhesionEnergy/Cells = 5 "Cell" "Floor" "Apoptotic" "Necrotic" "Both"
+uv:CC3D/Floor/AdhesionEnergy/Values= 5  100     0.0        100        100 100
+
+
+########################################
+# For dose scoring purspose
+d:CC3D/Cell/RadiusOfCellNucleus = 4.01 um
+# TargetVolume and Lambda
+d:CC3D/Cell/TargetVolume = 3054 um3
+i:CC3D/Cell/LambdaVolume = 2
+# Grow at "constant" rate, if so, doubling time is needed
+s:CC3D/Cell/GrowthModel = "constant"  # TODO: add phenocellpy
+d:CC3D/Cell/GrowthDoublingTime = 33 h
+b:CC3D/Cell/UseInRepairModel = "True"
+sv:CC3D/Cell/AdhesionEnergy/Cells = 5 "Cell" "Floor" "Apoptotic" "Necrotic" "Both"
+uv:CC3D/Cell/AdhesionEnergy/Values= 5  10.0    100      1.0         1.0       1.0
+
+########################################
+
+d:CC3D/Apoptotic/RadiusOfCellNucleus = 4.01 um 
+d:CC3D/Apoptotic/TargetVolume = 3054 um3
+i:CC3D/Apoptotic/LambdaVolume = 2
+s:CC3D/Apoptotic/GrowthModel = "constant"
+d:CC3D/Apoptotic/GrowthDoublingTime = -33 h
+b:CC3D/Apoptotic/UseInRepairModel = "False"
+sv:CC3D/Apoptotic/AdhesionEnergy/Cells = 3 "Apoptotic" "Necrotic" "Both"
+uv:CC3D/Apoptotic/AdhesionEnergy/Values= 3  1.0           1.0       1.0
+
+d:CC3D/Necrotic/RadiusOfCellNucleus = 4.01 um 
+d:CC3D/Necrotic/TargetVolume = 3054 um3
+i:CC3D/Necrotic/LambdaVolume = 2
+s:CC3D/Necrotic/GrowthModel = "constant"
+d:CC3D/Necrotic/GrowthDoublingTime = -33 h
+b:CC3D/Necrotic/UseInRepairModel = "False"
+sv:CC3D/Necrotic/AdhesionEnergy/Cells = 2 "Necrotic" "Both"
+uv:CC3D/Necrotic/AdhesionEnergy/Values= 2  1.0       1.0
+
+d:CC3D/Both/RadiusOfCellNucleus = 4.01 um 
+d:CC3D/Both/TargetVolume = 3054 um3
+i:CC3D/Both/LambdaVolume = 2
+s:CC3D/Both/GrowthModel = "constant"
+d:CC3D/Both/GrowthDoublingTime = -33 h
+b:CC3D/Both/UseInRepairModel = "True"
+sv:CC3D/Both/AdhesionEnergy/Cells = 1 "Both"
+uv:CC3D/Both/AdhesionEnergy/Values= 1  1.0
+
+i:CC3D/ShowMCSCountAtInterval = 1260
+
+# Prefix to create python and resource files: prefix.py prefix_Steppables.py
+s:CC3D/PythonFileNamePrefix = "SurvivalVSDose"
+s:CC3D/XMLFileName = "/Users/josegabrielhuacachi/Documents/TTissue/RPT/PC3_Culture_RPT/High_LET/XMLScripts/PC3_Culture_And_Fied.xml"
+s:CC3D/TOPASTissueDirectory = "/Applications/TOPAS-tissue"
+s:CC3D/WorkDirectory = "/Users/josegabrielhuacachi/Documents/TTissue/RPT/PC3_Culture_RPT/High_LET"
