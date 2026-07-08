@@ -1,0 +1,10 @@
+s:So/TOPASTissueSource/ActiveMaterial = "G4_WATER"
+d:So/TOPASTissueSource/BeamEnergy = 0 MeV
+u:So/TOPASTissueSource/BeamEnergySpread = 0
+s:So/TOPASTissueSource/BeamParticle = "alpha"
+s:So/TOPASTissueSource/Component = "cellPhantom"
+s:So/TOPASTissueSource/FileName = "MyDirectory"
+i:So/TOPASTissueSource/NumberOfHistoriesInRun = 513063
+s:So/TOPASTissueSource/Type = "TOPASTissueRPTChain"
+b:So/TOPASTissueSource/IsDecay = "True"
+s:So/TOPASTissueSource/RPT = "Ac-225"
