@@ -1,0 +1,18 @@
+s:Sc/dosePerVoxel/Quantity = "DoseToMedium"
+s:Sc/dosePerVoxel/Component = "cellPhantom"
+s:Sc/dosePerVoxel/OutputType = "Binary"
+s:Sc/dosePerVoxel/OutputFile = ""
+s:Sc/dosePerVoxel/IfOutputFileAlreadyExists = "Overwrite"
+
+
+s:Sc/phsp/Quantity = "DSBFromLookupTable"
+s:Sc/phsp/Component = "cellPhantom"
+s:Sc/phsp/PIFName = "output.mcs_19501.pif"
+s:Sc/phsp/OutputFile = "MyOutputFile"
+s:Sc/phsp/OutputType = "ASCII"
+s:Sc/phsp/IfOutputfileAlreadyExists = "Overwrite"
+b:Sc/phsp/PropagateToChildren = "True"
+b:Sc/phsp/MakeItRandom = "True"
+sv:Sc/phsp/OnlyIncludeParticlesNamed = 1 "alpha"
+#d:Sc/phsp/TimeWindowMin = 0 min 
+#d:Sc/phsp/TimeWindowMax = 2 min 
